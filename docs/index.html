@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+        #display {
+            position: fixed;
+            width: 300px;
+            height: 100px;
+            top: 10px;
+            left: 10px;
+            font-size: 2em;
+        }
+    </style>
+</head>
+<body>
+    <textarea id="display"></textarea>
+    <script>
+        const ws = new WebSocket('ws://localhost:8081')
+        const display = document.getElementById('display')
+
+        ws.onopen = () => {console.log('open')}
+        ws.onclose = () => {console.log('close')}
+
+        let currentData = {}
+
+        ws.onmessage = (event) => {
+            console.log(event.data)
+            currentData =  {...currentData, ...JSON.parse(event.data) }
+            const nextValue =
+                "エンジン回転数: " + currentData.engineRPM + 'rpm\n' +
+                'スピード: ' + currentData.currentSpeed + 'km/h\n' +
+                "クーラント水温: " + currentData.EngineCoolantTemperature + "°C"
+            display.value = nextValue
+        }
+    </script>
+</body>
+</html>
